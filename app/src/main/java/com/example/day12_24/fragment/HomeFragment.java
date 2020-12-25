@@ -1,6 +1,5 @@
-package com.example.day12_24;
+package com.example.day12_24.fragment;
 
-import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -10,15 +9,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.alibaba.android.vlayout.DelegateAdapter;
 import com.alibaba.android.vlayout.VirtualLayoutManager;
 import com.alibaba.android.vlayout.layout.LinearLayoutHelper;
-import com.alibaba.android.vlayout.layout.SingleLayoutHelper;
+import com.example.day12_24.R;
+import com.example.day12_24.adapter.MainLinearAdapter;
+import com.example.day12_24.bean.Bann;
+import com.example.day12_24.contract.MainContract;
+import com.example.day12_24.presenter.HomePresenterImpl;
 
-public class HomeFragment extends Fragment {
+import java.util.ArrayList;
+
+public class HomeFragment extends Fragment implements MainContract.IHomeView {
 
     private RecyclerView rv_home;
+    private DelegateAdapter adapter;
+    private LinearLayoutHelper linearLayoutHelper;
+    private ArrayList<Bann.DataBean.BannerBean> list;
+    private MainLinearAdapter mainLinearAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,8 +58,25 @@ public class HomeFragment extends Fragment {
 //        singleLayoutHelper.setBgColor(Color.GRAY);// 设置背景颜色
 //        singleLayoutHelper.setAspectRatio(6);// 设置设置布局内每行布局的宽与高的比
 //        MainSingleAdapter mainSingleAdapter = new MainSingleAdapter(singleLayoutHelper);
-        LinearLayoutHelper linearLayoutHelper = new LinearLayoutHelper(5);
-        DelegateAdapter adapter = new DelegateAdapter(virtualLayoutManager, true);
+        linearLayoutHelper = new LinearLayoutHelper(5);
+        HomePresenterImpl presenter = new HomePresenterImpl(this);
+        presenter.getBanner();
+        list = new ArrayList<>();
+        mainLinearAdapter = new MainLinearAdapter(linearLayoutHelper, list,getContext());
+        adapter = new DelegateAdapter(virtualLayoutManager, true);
+        rv_home.setAdapter(adapter);
+    }
 
+    @Override
+    public void getBanner(Bann bann) {
+        list.addAll(bann.getData().getBanner());
+        mainLinearAdapter.notifyDataSetChanged();
+        adapter.addAdapter(mainLinearAdapter);
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onFail(String error) {
+        Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
     }
 }

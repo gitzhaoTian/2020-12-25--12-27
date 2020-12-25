@@ -1,4 +1,4 @@
-package com.example.day12_24;
+package com.example.day12_24.view;
 
 import android.os.Bundle;
 import android.widget.RadioButton;
@@ -10,6 +10,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+
+import com.example.day12_24.R;
+import com.example.day12_24.fragment.HomeFragment;
+import com.example.day12_24.fragment.LoveFragment;
+import com.example.day12_24.fragment.ShoppingFragment;
+import com.example.day12_24.fragment.TitleFragment;
+import com.example.day12_24.fragment.WidgetsFragment;
 
 import java.util.ArrayList;
 

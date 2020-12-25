@@ -40,7 +40,7 @@ dependencies {
     //ButterKnife
     implementation 'com.jakewharton:butterknife:10.1.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
-    implementation('com.alibaba.android:vlayout:1.0.7@aar') {
+    compile('com.alibaba.android:vlayout:1.0.7@aar') {
         transitive = true
     }
     //上下拉 刷新的依赖
