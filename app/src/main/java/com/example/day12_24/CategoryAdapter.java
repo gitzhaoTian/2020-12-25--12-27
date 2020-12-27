@@ -23,11 +23,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class CategoryAdapter extends DelegateAdapter.Adapter {
-    private ArrayList<SmartBean.DataBean.CategoryListBean> listBeans;
+    private ArrayList<SmartBean.DataBean.CategoryListBean.GoodsListBean> listBeans;
     private GridLayoutHelper gridLayoutHelper;
     private Context context;
 
-    public CategoryAdapter(ArrayList<SmartBean.DataBean.CategoryListBean> listBeans, GridLayoutHelper gridLayoutHelper, Context context) {
+    public CategoryAdapter(ArrayList<SmartBean.DataBean.CategoryListBean.GoodsListBean> listBeans, GridLayoutHelper gridLayoutHelper, Context context) {
         this.listBeans = listBeans;
         this.gridLayoutHelper = gridLayoutHelper;
         this.context = context;
@@ -48,8 +48,7 @@ public class CategoryAdapter extends DelegateAdapter.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ViewHolder_Hot holder1 = (ViewHolder_Hot) holder;
-        List<SmartBean.DataBean.CategoryListBean.GoodsListBean> goodsList = listBeans.get(0).getGoodsList();
-        SmartBean.DataBean.CategoryListBean.GoodsListBean goodsListBean = goodsList.get(position);
+        SmartBean.DataBean.CategoryListBean.GoodsListBean goodsListBean = listBeans.get(position);
         Glide.with(context).load(goodsListBean.getList_pic_url()).into(holder1.ivListPicUrl);
         holder1.tvName.setText(goodsListBean.getName());
         holder1.tvPrice.setText("¥"+goodsListBean.getRetail_price());
@@ -57,7 +56,7 @@ public class CategoryAdapter extends DelegateAdapter.Adapter {
 
     @Override
     public int getItemCount() {
-        return listBeans.get(0).getGoodsList().size();
+        return listBeans.size();
     }
 
     static

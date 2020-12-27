@@ -35,6 +35,7 @@ import com.example.day12_24.bean.SmartBean;
 import com.example.day12_24.utils.URLConstant;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -200,11 +201,6 @@ public class HomeFragment extends Fragment {
     }
 
     private void initCategory() {
-        LinearLayoutHelper layoutHelper = new LinearLayoutHelper(5);
-        String title = "居家";
-        GridLayoutHelper gridLayoutHelper = new GridLayoutHelper(3);
-        gridLayoutHelper.setSpanCount(2);// 设置每行多少个网格
-        ArrayList<SmartBean.DataBean.CategoryListBean> list1 = new ArrayList<>();
         new Retrofit.Builder()
                 .baseUrl(ApiService.BASEURL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -222,12 +218,23 @@ public class HomeFragment extends Fragment {
 
                     @Override
                     public void onNext(@NonNull SmartBean smartBean) {
-                        list1.addAll(smartBean.getData().getCategoryList());
-                        CategoryAdapter categoryAdapter = new CategoryAdapter(list1,gridLayoutHelper,getContext());
-                        TextDayAdapter textAdapter = new TextDayAdapter(getContext(), layoutHelper, title);
-                        adapter.addAdapter(textAdapter);
-                        adapter.addAdapter(categoryAdapter);
-                        adapter.notifyDataSetChanged();
+                        List<SmartBean.DataBean.CategoryListBean> categoryList = smartBean.getData().getCategoryList();
+
+                        for (int i = 0; i <categoryList.size() ; i++) {
+                            List<SmartBean.DataBean.CategoryListBean.GoodsListBean> goodsList = categoryList.get(i).getGoodsList();
+                            String name = categoryList.get(i).getName();
+                            ArrayList<SmartBean.DataBean.CategoryListBean.GoodsListBean> list1 = new ArrayList<>();
+                            list1.addAll(goodsList);
+                            LinearLayoutHelper layoutHelper = new LinearLayoutHelper(5);
+//        String title = "居家";
+                            GridLayoutHelper gridLayoutHelper = new GridLayoutHelper(3);
+                            gridLayoutHelper.setSpanCount(2);// 设置每行多少个网格
+                            CategoryAdapter categoryAdapter = new CategoryAdapter(list1,gridLayoutHelper,getContext());
+                            TextDayAdapter textAdapter = new TextDayAdapter(getContext(), layoutHelper, name);
+                            adapter.addAdapter(textAdapter);
+                            adapter.addAdapter(categoryAdapter);
+                            adapter.notifyDataSetChanged();
+                        }
                     }
 
                     @Override
@@ -380,7 +387,7 @@ public class HomeFragment extends Fragment {
 //        girlsPresenter.get();
         RecyclerView.RecycledViewPool recycledViewPool = new RecyclerView.RecycledViewPool();
         rv_home.setRecycledViewPool(recycledViewPool);
-        recycledViewPool.setMaxRecycledViews(0, 20);
+        recycledViewPool.setMaxRecycledViews(0, 200);
         adapter = new DelegateAdapter(virtualLayoutManager, true);
         rv_home.setAdapter(adapter);
 //        SingleLayoutHelper singleLayoutHelper = new SingleLayoutHelper();
