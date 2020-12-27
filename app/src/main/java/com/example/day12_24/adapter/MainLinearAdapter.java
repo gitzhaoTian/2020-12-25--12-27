@@ -46,7 +46,7 @@ public class MainLinearAdapter extends DelegateAdapter.Adapter {
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == 0) {
             View view = LayoutInflater.from(context).inflate(R.layout.item_linear, parent, false);
-            return new ViewHolder(view);
+            return new ViewHolder_Search(view);
         }
         View view = LayoutInflater.from(context).inflate(R.layout.item_banner, parent, false);
         return new ViewHolder_Banner(view);
@@ -56,7 +56,7 @@ public class MainLinearAdapter extends DelegateAdapter.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         int itemViewType = getItemViewType(position);
         if (itemViewType==0){
-            ViewHolder viewHolder = (ViewHolder) holder;
+            ViewHolder_Search viewHolder = (ViewHolder_Search) holder;
             viewHolder.tvSearch.setText("商品搜索,共239款好物");
         }
         if (itemViewType==1){
@@ -86,11 +86,11 @@ public class MainLinearAdapter extends DelegateAdapter.Adapter {
     }
 
     static
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder_Search extends RecyclerView.ViewHolder {
         @BindView(R.id.tv_search)
         TextView tvSearch;
 
-        ViewHolder(View view) {
+        ViewHolder_Search(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }

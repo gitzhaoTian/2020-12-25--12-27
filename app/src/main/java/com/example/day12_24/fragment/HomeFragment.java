@@ -17,6 +17,7 @@ import com.alibaba.android.vlayout.DelegateAdapter;
 import com.alibaba.android.vlayout.VirtualLayoutManager;
 import com.alibaba.android.vlayout.layout.GridLayoutHelper;
 import com.alibaba.android.vlayout.layout.LinearLayoutHelper;
+import com.example.day12_24.CategoryAdapter;
 import com.example.day12_24.R;
 import com.example.day12_24.TextHotAdapter;
 import com.example.day12_24.adapter.HotGoodsAdapter;
@@ -26,6 +27,8 @@ import com.example.day12_24.adapter.NewGoodsAdapter;
 import com.example.day12_24.adapter.SmartAdapter;
 import com.example.day12_24.adapter.TextAdapter;
 import com.example.day12_24.adapter.TextDayAdapter;
+import com.example.day12_24.adapter.TextToPicAdapter;
+import com.example.day12_24.adapter.ToPicAdapter;
 import com.example.day12_24.api.ApiService;
 import com.example.day12_24.bean.BanBean;
 import com.example.day12_24.bean.SmartBean;
@@ -63,8 +66,6 @@ public class HomeFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         initView(getView());
         initData();
-        initNewDay();
-        initHotGoods();
         initSmart();
     }
 
@@ -92,11 +93,12 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onNext(@NonNull SmartBean smartBean) {
                         list1.addAll(smartBean.getData().getNewGoodsList());
-                        NewGoodsAdapter newGoodsAdapter = new NewGoodsAdapter(list1,gridLayoutHelper,getContext());
-                        TextDayAdapter textAdapter = new TextDayAdapter(getContext(),layoutHelper,title);
+                        NewGoodsAdapter newGoodsAdapter = new NewGoodsAdapter(list1, gridLayoutHelper, getContext());
+                        TextDayAdapter textAdapter = new TextDayAdapter(getContext(), layoutHelper, title);
                         adapter.addAdapter(textAdapter);
                         adapter.addAdapter(newGoodsAdapter);
                         adapter.notifyDataSetChanged();
+                        initHotGoods();
                     }
 
                     @Override
@@ -123,34 +125,121 @@ public class HomeFragment extends Fragment {
                 .build()
                 .create(ApiService.class)
                 .getSmart("index")
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Observer<SmartBean>() {
-            @Override
-            public void onSubscribe(@NonNull Disposable d) {
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<SmartBean>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
 
-            }
+                    }
 
-            @Override
-            public void onNext(@NonNull SmartBean smartBean) {
-                hotGoodsListBeans.addAll(smartBean.getData().getHotGoodsList());
-                HotGoodsAdapter hotGoodsAdapter = new HotGoodsAdapter(helper,hotGoodsListBeans,getContext());
-                TextHotAdapter textHotAdapter = new TextHotAdapter(getContext(), layoutHelper, title);
-                adapter.addAdapter(textHotAdapter);
-                adapter.addAdapter(hotGoodsAdapter);
-                adapter.notifyDataSetChanged();
-            }
+                    @Override
+                    public void onNext(@NonNull SmartBean smartBean) {
+                        hotGoodsListBeans.addAll(smartBean.getData().getHotGoodsList());
+                        HotGoodsAdapter hotGoodsAdapter = new HotGoodsAdapter(helper, hotGoodsListBeans, getContext());
+                        TextHotAdapter textHotAdapter = new TextHotAdapter(getContext(), layoutHelper, title);
+                        adapter.addAdapter(textHotAdapter);
+                        adapter.addAdapter(hotGoodsAdapter);
+                        adapter.notifyDataSetChanged();
+                        initTopic();
+                    }
 
-            @Override
-            public void onError(@NonNull Throwable e) {
+                    @Override
+                    public void onError(@NonNull Throwable e) {
 
-            }
+                    }
 
-            @Override
-            public void onComplete() {
+                    @Override
+                    public void onComplete() {
 
-            }
-        });
+                    }
+                });
+    }
+
+    private void initTopic() {
+        LinearLayoutHelper layoutHelper = new LinearLayoutHelper(5);
+        String title = "专题精选";
+        LinearLayoutHelper lin = new LinearLayoutHelper(5);
+        ArrayList<SmartBean.DataBean.TopicListBean> topicListBeans = new ArrayList<>();
+        new Retrofit.Builder()
+                .baseUrl(ApiService.BASEURL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build()
+                .create(ApiService.class)
+                .getSmart("index")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<SmartBean>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@NonNull SmartBean smartBean) {
+                        topicListBeans.addAll(smartBean.getData().getTopicList());
+                        TextToPicAdapter textToPicAdapter = new TextToPicAdapter(getContext(), layoutHelper, title);
+                        ToPicAdapter toPicAdapter = new ToPicAdapter(lin,topicListBeans,getContext());
+                        adapter.addAdapter(textToPicAdapter);
+                        adapter.addAdapter(toPicAdapter);
+                        adapter.notifyDataSetChanged();
+                        initCategory();
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    private void initCategory() {
+        LinearLayoutHelper layoutHelper = new LinearLayoutHelper(5);
+        String title = "居家";
+        GridLayoutHelper gridLayoutHelper = new GridLayoutHelper(3);
+        gridLayoutHelper.setSpanCount(2);// 设置每行多少个网格
+        ArrayList<SmartBean.DataBean.CategoryListBean> list1 = new ArrayList<>();
+        new Retrofit.Builder()
+                .baseUrl(ApiService.BASEURL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build()
+                .create(ApiService.class)
+                .getSmart("index")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<SmartBean>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@NonNull SmartBean smartBean) {
+                        list1.addAll(smartBean.getData().getCategoryList());
+                        CategoryAdapter categoryAdapter = new CategoryAdapter(list1,gridLayoutHelper,getContext());
+                        TextDayAdapter textAdapter = new TextDayAdapter(getContext(), layoutHelper, title);
+                        adapter.addAdapter(textAdapter);
+                        adapter.addAdapter(categoryAdapter);
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     private void initSmart() {
@@ -190,17 +279,18 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onNext(@NonNull SmartBean smartBean) {
                         brandListBeans.addAll(smartBean.getData().getBrandList());
-                        SmartAdapter smartAdapter = new SmartAdapter(gridLayoutHelper,brandListBeans,getContext());
-                        TextAdapter textAdapter = new TextAdapter(getContext(),layoutHelper,title);
+                        SmartAdapter smartAdapter = new SmartAdapter(gridLayoutHelper, brandListBeans, getContext());
+                        TextAdapter textAdapter = new TextAdapter(getContext(), layoutHelper, title);
                         adapter.addAdapter(textAdapter);
                         adapter.addAdapter(smartAdapter);
                         adapter.notifyDataSetChanged();
+                        initNewDay();
                     }
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        Log.e("TAG", "onError: 网络异常:"+e.getMessage());
-                        Toast.makeText(getContext(), "网络异常:"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("TAG", "onError: 网络异常:" + e.getMessage());
+                        Toast.makeText(getContext(), "网络异常:" + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -208,7 +298,6 @@ public class HomeFragment extends Fragment {
 
                     }
                 });
-
     }
 
     private void initData() {
@@ -246,7 +335,7 @@ public class HomeFragment extends Fragment {
         list.add(R.drawable.a);
         list.add(R.drawable.b);
         list.add(R.drawable.c);
-        Log.e("TAG", "initData: size"+list.size());
+        Log.e("TAG", "initData: size" + list.size());
         linearLayoutHelper = new LinearLayoutHelper(5);
         MainLinearAdapter mainLinearAdapter = new MainLinearAdapter(linearLayoutHelper, list, getContext());
         GridLayoutHelper gridLayoutHelper = new GridLayoutHelper(3);
@@ -276,7 +365,7 @@ public class HomeFragment extends Fragment {
         strings.add("配件");
         strings.add("服装");
         strings.add("志趣");
-        MainGridAdapter mainGridAdapter = new MainGridAdapter(gridLayoutHelper,integers,strings,getContext());
+        MainGridAdapter mainGridAdapter = new MainGridAdapter(gridLayoutHelper, integers, strings, getContext());
         adapter.addAdapter(mainLinearAdapter);
         adapter.addAdapter(mainGridAdapter);
         adapter.notifyDataSetChanged();
@@ -291,7 +380,7 @@ public class HomeFragment extends Fragment {
 //        girlsPresenter.get();
         RecyclerView.RecycledViewPool recycledViewPool = new RecyclerView.RecycledViewPool();
         rv_home.setRecycledViewPool(recycledViewPool);
-        recycledViewPool.setMaxRecycledViews(0,10);
+        recycledViewPool.setMaxRecycledViews(0, 20);
         adapter = new DelegateAdapter(virtualLayoutManager, true);
         rv_home.setAdapter(adapter);
 //        SingleLayoutHelper singleLayoutHelper = new SingleLayoutHelper();
