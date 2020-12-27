@@ -18,6 +18,8 @@ import com.alibaba.android.vlayout.VirtualLayoutManager;
 import com.alibaba.android.vlayout.layout.GridLayoutHelper;
 import com.alibaba.android.vlayout.layout.LinearLayoutHelper;
 import com.example.day12_24.R;
+import com.example.day12_24.TextHotAdapter;
+import com.example.day12_24.adapter.HotGoodsAdapter;
 import com.example.day12_24.adapter.MainGridAdapter;
 import com.example.day12_24.adapter.MainLinearAdapter;
 import com.example.day12_24.adapter.NewGoodsAdapter;
@@ -61,6 +63,8 @@ public class HomeFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         initView(getView());
         initData();
+        initNewDay();
+        initHotGoods();
         initSmart();
     }
 
@@ -105,6 +109,48 @@ public class HomeFragment extends Fragment {
 
                     }
                 });
+    }
+
+    private void initHotGoods() {
+        LinearLayoutHelper layoutHelper = new LinearLayoutHelper(5);
+        String title = "人气推荐";
+        LinearLayoutHelper helper = new LinearLayoutHelper(5);
+        ArrayList<SmartBean.DataBean.HotGoodsListBean> hotGoodsListBeans = new ArrayList<>();
+        new Retrofit.Builder()
+                .baseUrl(ApiService.BASEURL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiService.class)
+                .getSmart("index")
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Observer<SmartBean>() {
+            @Override
+            public void onSubscribe(@NonNull Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(@NonNull SmartBean smartBean) {
+                hotGoodsListBeans.addAll(smartBean.getData().getHotGoodsList());
+                HotGoodsAdapter hotGoodsAdapter = new HotGoodsAdapter(helper,hotGoodsListBeans,getContext());
+                TextHotAdapter textHotAdapter = new TextHotAdapter(getContext(), layoutHelper, title);
+                adapter.addAdapter(textHotAdapter);
+                adapter.addAdapter(hotGoodsAdapter);
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(@NonNull Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
     private void initSmart() {
@@ -162,7 +208,7 @@ public class HomeFragment extends Fragment {
 
                     }
                 });
-        initNewDay();
+
     }
 
     private void initData() {
@@ -231,11 +277,9 @@ public class HomeFragment extends Fragment {
         strings.add("服装");
         strings.add("志趣");
         MainGridAdapter mainGridAdapter = new MainGridAdapter(gridLayoutHelper,integers,strings,getContext());
-
-        adapter = new DelegateAdapter(virtualLayoutManager, true);
         adapter.addAdapter(mainLinearAdapter);
         adapter.addAdapter(mainGridAdapter);
-        rv_home.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     private void initView(View view) {
@@ -248,6 +292,8 @@ public class HomeFragment extends Fragment {
         RecyclerView.RecycledViewPool recycledViewPool = new RecyclerView.RecycledViewPool();
         rv_home.setRecycledViewPool(recycledViewPool);
         recycledViewPool.setMaxRecycledViews(0,10);
+        adapter = new DelegateAdapter(virtualLayoutManager, true);
+        rv_home.setAdapter(adapter);
 //        SingleLayoutHelper singleLayoutHelper = new SingleLayoutHelper();
 //        // 公共属性
 //        singleLayoutHelper.setItemCount(1);// 设置布局里Item个数
