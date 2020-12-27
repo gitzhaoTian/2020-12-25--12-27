@@ -20,8 +20,10 @@ import com.alibaba.android.vlayout.layout.LinearLayoutHelper;
 import com.example.day12_24.R;
 import com.example.day12_24.adapter.MainGridAdapter;
 import com.example.day12_24.adapter.MainLinearAdapter;
+import com.example.day12_24.adapter.NewGoodsAdapter;
 import com.example.day12_24.adapter.SmartAdapter;
 import com.example.day12_24.adapter.TextAdapter;
+import com.example.day12_24.adapter.TextDayAdapter;
 import com.example.day12_24.api.ApiService;
 import com.example.day12_24.bean.BanBean;
 import com.example.day12_24.bean.SmartBean;
@@ -62,11 +64,52 @@ public class HomeFragment extends Fragment {
         initSmart();
     }
 
+    private void initNewDay() {
+        LinearLayoutHelper layoutHelper = new LinearLayoutHelper(5);
+        String title = "周一周四·新品首发";
+        GridLayoutHelper gridLayoutHelper = new GridLayoutHelper(3);
+        gridLayoutHelper.setSpanCount(2);// 设置每行多少个网格
+        ArrayList<SmartBean.DataBean.NewGoodsListBean> list1 = new ArrayList<>();
+        new Retrofit.Builder()
+                .baseUrl(ApiService.BASEURL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build()
+                .create(ApiService.class)
+                .getSmart("index")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<SmartBean>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@NonNull SmartBean smartBean) {
+                        list1.addAll(smartBean.getData().getNewGoodsList());
+                        NewGoodsAdapter newGoodsAdapter = new NewGoodsAdapter(list1,gridLayoutHelper,getContext());
+                        TextDayAdapter textAdapter = new TextDayAdapter(getContext(),layoutHelper,title);
+                        adapter.addAdapter(textAdapter);
+                        adapter.addAdapter(newGoodsAdapter);
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
     private void initSmart() {
         LinearLayoutHelper layoutHelper = new LinearLayoutHelper(5);
-        TextAdapter textAdapter = new TextAdapter(getContext(),layoutHelper);
-        adapter.addAdapter(textAdapter);
-        adapter.notifyDataSetChanged();
+        String title = "品牌制造商直供";
         GridLayoutHelper gridLayoutHelper = new GridLayoutHelper(3);
         // 在构造函数设置每行的网格个数
         // 公共属性
@@ -102,6 +145,8 @@ public class HomeFragment extends Fragment {
                     public void onNext(@NonNull SmartBean smartBean) {
                         brandListBeans.addAll(smartBean.getData().getBrandList());
                         SmartAdapter smartAdapter = new SmartAdapter(gridLayoutHelper,brandListBeans,getContext());
+                        TextAdapter textAdapter = new TextAdapter(getContext(),layoutHelper,title);
+                        adapter.addAdapter(textAdapter);
                         adapter.addAdapter(smartAdapter);
                         adapter.notifyDataSetChanged();
                     }
@@ -117,6 +162,7 @@ public class HomeFragment extends Fragment {
 
                     }
                 });
+        initNewDay();
     }
 
     private void initData() {

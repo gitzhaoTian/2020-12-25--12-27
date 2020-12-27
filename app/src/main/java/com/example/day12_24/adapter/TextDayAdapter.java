@@ -17,12 +17,12 @@ import com.example.day12_24.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class TextAdapter extends DelegateAdapter.Adapter {
+public class TextDayAdapter extends DelegateAdapter.Adapter {
     private Context context;
     private LinearLayoutHelper linearLayoutHelper;
     private String title;
 
-    public TextAdapter(Context context, LinearLayoutHelper linearLayoutHelper, String title) {
+    public TextDayAdapter(Context context, LinearLayoutHelper linearLayoutHelper, String title) {
         this.context = context;
         this.linearLayoutHelper = linearLayoutHelper;
         this.title = title;
