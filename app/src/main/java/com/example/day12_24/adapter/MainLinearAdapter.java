@@ -15,7 +15,7 @@ import com.alibaba.android.vlayout.LayoutHelper;
 import com.alibaba.android.vlayout.layout.LinearLayoutHelper;
 import com.bumptech.glide.Glide;
 import com.example.day12_24.R;
-import com.example.day12_24.bean.Bann;
+import com.example.day12_24.bean.BanBean;
 import com.youth.banner.Banner;
 import com.youth.banner.loader.ImageLoader;
 
@@ -27,10 +27,10 @@ import butterknife.ButterKnife;
 public class MainLinearAdapter extends DelegateAdapter.Adapter {
 
     private LinearLayoutHelper linearLayoutHelper;
-    private ArrayList<Bann.DataBean.BannerBean> list;
+    private ArrayList<Integer> list;
     private Context context;
 
-    public MainLinearAdapter(LinearLayoutHelper linearLayoutHelper, ArrayList<Bann.DataBean.BannerBean> list, Context context) {
+    public MainLinearAdapter(LinearLayoutHelper linearLayoutHelper, ArrayList<Integer> list, Context context) {
         this.linearLayoutHelper = linearLayoutHelper;
         this.list = list;
         this.context = context;
@@ -65,8 +65,7 @@ public class MainLinearAdapter extends DelegateAdapter.Adapter {
                     .setImageLoader(new ImageLoader() {
                         @Override
                         public void displayImage(Context context, Object path, ImageView imageView) {
-                            Bann.DataBean.BannerBean bannerBean = (Bann.DataBean.BannerBean) path;
-                            Glide.with(context).load(bannerBean.getImage_url()).into(imageView);
+                            Glide.with(context).load(path).into(imageView);
                         }
                     }).start();
         }

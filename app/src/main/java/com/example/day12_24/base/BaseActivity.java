@@ -7,17 +7,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import butterknife.ButterKnife;
 
-public abstract class BaseActivity<P> extends AppCompatActivity {
-    public P presenter;
+public abstract class BaseActivity<T> extends AppCompatActivity {
+    public T presenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutID());
+        // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
-
         if (presenter==null){
-            presenter = add();
+            presenter = getPresenter();
         }
         initView();
         initData();
@@ -27,7 +27,7 @@ public abstract class BaseActivity<P> extends AppCompatActivity {
 
     protected abstract void initView();
 
-    protected abstract P add();
+    protected abstract T getPresenter();
 
     protected abstract int getLayoutID();
 }

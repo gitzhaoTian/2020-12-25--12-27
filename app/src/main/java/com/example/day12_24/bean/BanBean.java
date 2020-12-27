@@ -3,7 +3,7 @@ package com.example.day12_24.bean;
 import java.io.Serializable;
 import java.util.List;
 
-public class Bann {
+public class BanBean {
 
     /**
      * errno : 0
